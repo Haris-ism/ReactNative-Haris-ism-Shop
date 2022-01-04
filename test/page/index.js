@@ -9,12 +9,15 @@ import Sell from './Sell'
 import Account from './Account'
 import Detail from './Detail'
 import {AccountProvider} from '../context/Context'
+import store from '../Redux/store';
+import { Provider } from 'react-redux';
 import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 export default function index({route, navigation}) {
     return (
-      <AccountProvider>
+      <Provider store={store}>
+       <AccountProvider>
        <NavigationContainer>
         <Stack.Navigator initialRouteName="Login" >
             <Stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
@@ -22,7 +25,8 @@ export default function index({route, navigation}) {
             <Stack.Screen name="Detail" component={Detail} options={{ headerShown: false }}/>          
         </Stack.Navigator>
       </NavigationContainer>
-      </AccountProvider>
+       </AccountProvider>
+      </Provider>
     )
 }
 const MainApp=({route, navigation})=>(

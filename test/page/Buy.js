@@ -1,5 +1,7 @@
 import React, { useEffect,useContext,useState } from 'react'
 import {AccountContext} from '../context/Context'
+import { useSelector, useDispatch } from 'react-redux';
+import {userAct,firstNameAct,lastNameAct,balanceAct,imageAct,refreshAct,selectuser,selectfirstName,selectlastName,selectbalance,selectimage,selectrefresh} from '../Redux/Slicer'
 import { StyleSheet, Text, View, Image, Button, FlatList,TouchableOpacity } from 'react-native'
 import axios from 'axios';
 export default function Home({route, navigation}) {
@@ -7,7 +9,14 @@ export default function Home({route, navigation}) {
     const client = axios.create({
         baseURL:baseURL,
     });
-    const [user,setuser,firstName,setfirstName,lastName,setlastName,profile,setprofile,balance,setbalance,refresh,setrefresh]=useContext(AccountContext);
+    const stateuser = useSelector(selectuser);
+    const statefirstName = useSelector(selectfirstName);
+    const statelastName = useSelector(selectlastName);
+    const statebalance = useSelector(selectbalance);
+    const stateimage = useSelector(selectimage);
+    const staterefresh = useSelector(selectrefresh);
+    const dispatch = useDispatch();
+    // const [user,setuser,firstName,setfirstName,lastName,setlastName,profile,setprofile,,setbalance,refresh,setrefresh]=useContext(AccountContext);
     const [totalPrice, setTotalPrice] = useState(0);
     const [product,setproduct]=useState([]);
     const handleError=(err)=>{
@@ -29,11 +38,11 @@ export default function Home({route, navigation}) {
             .then((res)=>{
                 const data2=res.data;
                 // console.log("res Account: ",data2);
-                setuser(data2);
-                setfirstName(data2.firstName);
-                setlastName(data2.lastName);
-                setbalance(data2.balance);
-                setprofile(data2.image);
+                dispatch(userAct(data2));
+                dispatch(firstNameAct(data2.firstName));
+                dispatch(lastNameAct(data2.lastName));
+                dispatch(balanceAct(data2.balance));
+                dispatch(imageAct(data2.image));
             })
             .catch((err)=>{
                 handleError(err)
@@ -53,8 +62,9 @@ export default function Home({route, navigation}) {
     useEffect(()=>{
         GetDataAccount()
         GetDataProduct()
-        setrefresh(false)
-    },[refresh])
+        dispatch(refreshAct(false))
+        console.log(staterefresh)
+    },[staterefresh])
     // const { username } = route.params;
     const currencyFormat=(num)=> {
         return 'Rp ' + num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
@@ -66,7 +76,7 @@ export default function Home({route, navigation}) {
             
     }
     const pay=(bought)=>{
-        const calculation = Number(balance)- Number(bought);
+        const calculation = Number(statebalance)- Number(bought);
         client
             .put(`/Account/1`,{balance:calculation})
             .then((res)=>{
@@ -83,14 +93,14 @@ export default function Home({route, navigation}) {
             <View style={styles.header}>
                 <View>
                     <Image
-                        source={profile ? {uri: profile } : null}
+                        source={stateimage ? {uri: stateimage } : null}
                         style={styles.profilePic}
                     />
                 </View>
                 <View style={styles.profileInfo}>
-                    <Text style={{fontSize:25,color:"white"}}>{firstName}</Text>
-                    <Text style={{fontSize:25,color:"white"}}>{lastName}</Text>
-                    <Text style={{color:"white"}}>Balance: {currencyFormat(Number(balance))}</Text>
+                    <Text style={{fontSize:25,color:"white"}}>{statefirstName}</Text>
+                    <Text style={{fontSize:25,color:"white"}}>{statelastName}</Text>
+                    <Text style={{color:"white"}}>Balance: {currencyFormat(Number(statebalance))}</Text>
                 </View>
             </View>
             <View style={{flexDirection:'row', justifyContent:"flex-end",marginBottom:15}}>

@@ -1,5 +1,7 @@
 import React, { useEffect,useContext,useState } from 'react'
 import {AccountContext} from '../context/Context'
+import { useSelector, useDispatch } from 'react-redux';
+import {userAct,firstNameAct,lastNameAct,balanceAct,imageAct,refreshAct,selectuser,selectfirstName,selectlastName,selectbalance,selectimage,selectrefresh} from '../Redux/Slicer'
 import { StyleSheet,TouchableOpacity, Text, View, Image, TextInput} from 'react-native'
 import axios from 'axios';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -8,7 +10,14 @@ export default function Home({route, navigation}) {
     const client = axios.create({
         baseURL:baseURL,
     });
-    const [user,setuser,firstName,setfirstName,lastName,setlastName,profile,setprofile,balance,setbalance,refresh,setrefresh]=useContext(AccountContext);
+    const stateuser = useSelector(selectuser);
+    const statefirstName = useSelector(selectfirstName);
+    const statelastName = useSelector(selectlastName);
+    const statebalance = useSelector(selectbalance);
+    const stateimage = useSelector(selectimage);
+    const staterefresh = useSelector(selectrefresh);
+    const dispatch = useDispatch();
+    // const [user,setuser,firstName,setfirstName,lastName,setlastName,profile,setprofile,balance,setbalance,refresh,setrefresh]=useContext(AccountContext);
     const [productName,setproductName]=useState("");
     const [price,setprice]=useState("");
     const [image,setimage]=useState("");
@@ -23,11 +32,11 @@ export default function Home({route, navigation}) {
             .then((res)=>{
                 const data2=res.data;
                 // console.log("res Account: ",data2);
-                setuser(data2);
-                setfirstName(data2.firstName);
-                setlastName(data2.lastName);
-                setbalance(data2.balance);
-                setprofile(data2.image);
+                // dispatch(userAct(data2));
+                dispatch(firstNameAct(data2.firstName));
+                dispatch(lastNameAct(data2.lastName));
+                dispatch(balanceAct(data2.balance));
+                dispatch(imageAct(data2.image));
             })
             .catch((err)=>{
                 handleError(err)
@@ -43,12 +52,11 @@ export default function Home({route, navigation}) {
                         setproductName(""),
                         setprice(""),
                         setimage(""),
-                        setdescription(""),
-                        setrefresh(true)
+                        setdescription("")
                     ).catch((err)=>{
                         handleError(err)
                     }),
-            setrefresh(true),
+            dispatch(userAct(true)),
             navigation.navigate("Account") 
             ).catch((err)=>{
                 handleError(err)
@@ -73,14 +81,14 @@ export default function Home({route, navigation}) {
             <View style={styles.header}>
                 <View>
                     <Image
-                        source={profile ? {uri: profile } : null}
+                        source={stateimage ? {uri: stateimage } : null}
                         style={styles.profilePic}
                     />
                 </View>
                 <View style={styles.profileInfo}>
-                    <Text style={{fontSize:25,color:"white"}}>{firstName}</Text>
-                    <Text style={{fontSize:25,color:"white"}}>{lastName}</Text>
-                    <Text style={{color:"white"}}>Balance: {currencyFormat(Number(balance))}</Text>
+                    <Text style={{fontSize:25,color:"white"}}>{statefirstName}</Text>
+                    <Text style={{fontSize:25,color:"white"}}>{statelastName}</Text>
+                    <Text style={{color:"white"}}>Balance: {currencyFormat(Number(statebalance))}</Text>
                 </View>
             </View>
             <View style={styles.content}>

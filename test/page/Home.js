@@ -1,14 +1,23 @@
 import React, { useEffect,useContext,useState } from 'react'
 import {AccountContext} from '../context/Context'
+import { useSelector, useDispatch } from 'react-redux';
+import {userAct,firstNameAct,lastNameAct,balanceAct,imageAct,refreshAct,selectuser,selectfirstName,selectlastName,selectbalance,selectimage,selectrefresh} from '../Redux/Slicer'
 import axios from 'axios';
 import  MaterialCommunityIcons  from 'react-native-vector-icons/MaterialCommunityIcons';
 import { StyleSheet, Text, View, Image, TouchableOpacity, TouchableOpacityComponent, Button } from 'react-native'
 export default function Home({route, navigation}) {
-const [refresh,setrefresh]=useState(true);
+// const [refresh,setrefresh]=useState(true);
+const stateuser = useSelector(selectuser);
+const statefirstName = useSelector(selectfirstName);
+const statelastName = useSelector(selectlastName);
+const statebalance = useSelector(selectbalance);
+const stateimage = useSelector(selectimage);
+const staterefresh = useSelector(selectrefresh);
+const dispatch = useDispatch();
 const currencyFormat=(num)=> {
     return 'Rp ' + num.toFixed(0).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
   };
-const [user,setuser,firstName,setfirstName,lastName,setlastName,profile,setprofile,balance,setbalance]=useContext(AccountContext);
+// const [user,setuser,firstName,setfirstName,lastName,setlastName,profile,setprofile,balance,setbalance]=useContext(AccountContext);
 
 const baseURL ="https://616a426c16e7120017fa0ef1.mockapi.io";
 const client = axios.create({
@@ -20,11 +29,11 @@ const GetDataAccount=()=>{
         .then((res)=>{
             const data2=res.data;
             // console.log("res Account: ",data2);
-            setuser(data2);
-            setfirstName(data2.firstName);
-            setlastName(data2.lastName);
-            setbalance(data2.balance);
-            setprofile(data2.image);
+            
+            dispatch(firstNameAct(data2.firstName));
+            dispatch(lastNameAct(data2.lastName));
+            dispatch(balanceAct(data2.balance));
+            dispatch(imageAct(data2.image));
         })
         .catch((err)=>{
             handleError(err)
@@ -33,21 +42,22 @@ const GetDataAccount=()=>{
 
 useEffect(()=>{
     GetDataAccount()
-    setrefresh(false)
-},[refresh])
+    dispatch(refreshAct(false))
+    console.log(staterefresh)
+},[staterefresh])
 return (
     <View style={styles.container}>
         <View style={styles.header}>
             <View>
                 <Image
-                    source={profile ? {uri: profile } : null}
+                    source={stateimage ? {uri: stateimage } : null}
                     style={styles.profilePic}
                 />
             </View>
             <View style={styles.profileInfo}>
-                    <Text style={{fontSize:25,color:"white"}}>{firstName}</Text>
-                    <Text style={{fontSize:25,color:"white"}}>{lastName}</Text>
-                    <Text style={{color:"white"}}>Balance: {currencyFormat(Number(balance))}</Text>
+                    <Text style={{fontSize:25,color:"white"}}>{statefirstName}</Text>
+                    <Text style={{fontSize:25,color:"white"}}>{statelastName}</Text>
+                    <Text style={{color:"white"}}>Balance: {currencyFormat(Number(statebalance))}</Text>
             </View>
         </View>
         <View style={styles.content}> 
