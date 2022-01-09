@@ -82,6 +82,7 @@ export default function Home({route, navigation}) {
             .then((res)=>{
                 console.log("res: ",res.data);
                 GetDataAccount();
+                setTotalPrice(0);
             })
             .catch((err)=>{
                 handleError(err)

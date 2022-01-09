@@ -56,7 +56,7 @@ export default function Home({route, navigation}) {
                     ).catch((err)=>{
                         handleError(err)
                     }),
-            dispatch(userAct(true)),
+            dispatch(refreshAct(true)),
             navigation.navigate("Account") 
             ).catch((err)=>{
                 handleError(err)
